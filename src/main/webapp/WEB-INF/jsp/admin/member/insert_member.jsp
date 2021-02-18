@@ -47,7 +47,7 @@
                   </div>
                   <div class="form-group">
                     <label for="PASSWORD">PASSWORD</label>
-                    <input type="password" class="form-control" name="PASSWORD" id="PASSWORD" placeholder="암호를 입력해 주세요.">
+                    <input type="password" class="form-control" name="PASSWORD" id="PASSWORD" placeholder="암호를 입력해 주세요." required>
                   </div>
                   <div class="form-group">
                     <label for="PASSWORD_HINT">PASSWORD_HINT</label>
@@ -138,8 +138,25 @@ $(document).ready(function(){
 	//EMPYR_ID 중복체크 이후 submit버튼을 disabled를 false로 활성화 시키면 전송이 가능 Ajax
 	//blur조건 focus의 반대말.
 	$("#EMPLYR_ID").bind("blur", function(){
+		var emplyr_id = $(this).val();
+		$.ajax({
+			url:"<c:url value='/' />idcheck.do?emplyr_id="+emplyr_id,//@Response사용하는 클래스의 메서드 매핑URL값
+			type:"get",//jsp에서 컨트롤러 보내는 방식
+			dataType:"text",//ajax결과를 컨트롤러에서 받는 방식			 
+			success:function(result){
+				if(result=="0"){//중복 id가 없으면
+					alert("사용가능한 ID입니다.")
+					$("#btn_insert").attr("disabled", false);//서밋버튼 활성화
+				}else {//중복id가 있으면
+					alert("중복ID가 존재합니다..");
+					$("#btn_insert").attr("disabled", true);//서밋버튼 비활성화					
+				}
+			},
+			error:function(){
+				alert("RestAPI서버에 문제가 있습니다.")
+			}
+		});
 		
-		$("#btn_insert").attr("disabled", false);//서밋버튼 활성화
 	})
 });
 </script>
