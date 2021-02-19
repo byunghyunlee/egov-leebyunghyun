@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import edu.human.com.member.service.EmployerInfoVO;
 import edu.human.com.member.service.MemberService;
+import edu.human.com.util.PageVO;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -17,9 +18,9 @@ public class MemberServiceImpl implements MemberService {
 	private MemberDAO memberDAO;
 	
 	@Override
-	public List<EmployerInfoVO> selectMember() throws Exception {
+	public List<EmployerInfoVO> selectMember(PageVO pageVO) throws Exception {
 		// DAO클래스에서 메서드호출
-		return memberDAO.selectMember();
+		return memberDAO.selectMember(pageVO);
 	}
 
 	@Override

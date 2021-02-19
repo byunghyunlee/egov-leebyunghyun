@@ -3,8 +3,10 @@ package edu.human.com.member.service;
 import java.util.List;
 import java.util.Map;
 
+import edu.human.com.util.PageVO;
+
 public interface MemberService {
-	public List<EmployerInfoVO> selectMember() throws Exception;
+	public List<EmployerInfoVO> selectMember(PageVO pageVO) throws Exception;
 	public EmployerInfoVO viewMember(String emplyr_id) throws Exception;
 	public int deleteMember(String emplyr_id) throws Exception;
 	public void insertMember(EmployerInfoVO employerInfoVO) throws Exception;

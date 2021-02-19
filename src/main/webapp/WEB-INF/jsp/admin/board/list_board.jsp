@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="../include/header.jsp" %>
-    
+
   <!-- 대시보드 본문 Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- 본문헤더 Content Header (Page header) -->
@@ -9,12 +9,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">회원리스트</h1>
+            <h1 class="m-0">게시판리스트</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">회원리스트</li>
+              <li class="breadcrumb-item active">게시판리스트</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -30,18 +30,18 @@
           <div class="col-12"><!-- 그리드시스템중 12가로칼럼 width:100% -->
             <div class="card"><!-- 부트스트랩의 카드 클래스:네모난 디자인 -->
               <div class="card-header">
-                <h3 class="card-title">멤버 검색</h3>
+                <h3 class="card-title">게시물 검색</h3>
 
                 <div class="card-tools">
                   
-                  <form name="search_form" action="<c:url value='/' />admin/member/list_member.do" method="get">
+                  <form name="search_form" action="member_list.html" method="get">
                   <div class="input-group input-group-sm">
                     <!-- 부트스트랩 템플릿만으로는 디자인처리가 부족한 경우가 있기 때문에 종종 인라인 스타일 사용 -->
                     <div>
-                        <select name="search_type" class="form-control">
-                            <option value="all" selected>-전체-</option>
-                            <option value="user_id" data-select2-id="8">ID</option>
-                            <option value="user_name" data-select2-id="16">이름</option>
+                        <select class="form-control">
+                            <option value="" selected>-전체-</option>
+                            <option value="user_id" data-select2-id="8">제목</option>
+                            <option value="user_name" data-select2-id="16">내용</option>
                         </select>
                     </div>
                     <div>
@@ -62,29 +62,32 @@
                 <table class="table table-hover text-nowrap">
                   <thead>
                     <tr>
-                      <th>EMPLYR_ID</th><!-- 테이블 헤드 타이틀태그th -->
-                      <th>USER_NM</th>
-                      <th>EMAIL_ADRES</th>
-                      <th>EMPLYR_STTUS_CODE</th>
-                      <th>SBSCRB_DE</th>
-                      <th>GROUP_ID</th>
+                      <th>bno</th><!-- 테이블 헤드 타이틀태그th -->
+                      <th>title[replycnt]</th>
+                      <th>writer</th>
+                      <th>regdate</th>
+                      <th>viewcnt</th>
                     </tr>
                   </thead>
                   <tbody>
-                  <c:forEach items="${listMember}" var="memberVO">
                     <tr>
-                      <td><a href="<c:url value='/admin/member/view_member.do?emplyr_id=${memberVO.EMPLYR_ID}&page=${pageVO.page}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}' />">${memberVO.EMPLYR_ID}</a></td>
-                      <!-- 위에 a링크값은 리스트가 늘어날 수록 동적으로 user_id값이 변하게 됩니다. 개발자가 jsp처리 -->
-                      <td>${memberVO.USER_NM}</td>
-                      <td>${memberVO.EMAIL_ADRES}</td>
-                      <td>${memberVO.EMPLYR_STTUS_CODE}</td>
-                      <td>
-                      <fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${memberVO.SBSCRB_DE}" />
-                      </td>
-                      <td><span class="badge bg-danger">${memberVO.GROUP_ID}</span></td>
+                      <td>1</td>
+                      <!-- 아래 a링크값은 리스트가 늘어날 수록 동적으로 bno값이 변하게 됩니다. 개발자가 jsp처리 -->
+                      <td><a href="board_view.html?bno=1">첫번째 게시물 제목[2]</a></td>
+                      <td>admin</td>
+                      <td>2020-12-09</td>
+                      <td><span class="badge bg-danger">3</span></td>
                       <!-- 권한표시는 부트스트랩 뺏지 클래스 사용 -->
                     </tr>
-                  </c:forEach>
+                    <tr>
+                      <td>2</td>
+                      <!-- 아래 a링크값은 리스트가 늘어날 수록 동적으로 bno값이 변하게 됩니다. 개발자가 jsp처리 -->
+                      <td><a href="board_view.html?bno=2">두번째 게시물 제목[0]</a></td>
+                      <td>user02</td>
+                      <td>2020-12-09</td>
+                      <td><span class="badge bg-danger">0</span></td>
+                      <!-- 권한표시는 부트스트랩 뺏지 클래스 사용 -->
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -95,7 +98,7 @@
             
             <!-- 버튼영역 시작 -->
               <div class="card-body">
-              	<a href="<c:url value='/admin/member/insert_member.do' />" class="btn btn-primary float-right">CREATE</a>
+              	<a href="board_write.html" class="btn btn-primary float-right">CREATE</a>
               	<!-- 부트스트랩 디자인 버튼클래스를 이용해서 a태그를 버튼모양 만들기(위) -->
               	<!-- btn클래스명이 버튼모양으로 변경, btn-primary클래스명은 버튼색상을 변경하는역할 -->
               	<!-- 
@@ -108,28 +111,20 @@
               </div>
             <!-- 버튼영역 끝 -->
               
-<!-- 페이징처리 시작 -->
+            <!-- 페이징처리 시작 -->
             <div class="pagination justify-content-center">
             	<ul class="pagination">
-            	 <c:if test="${pageVO.prev}">
-	            	 <li class="paginate_button page-item previous" id="example2_previous">
-	            	 <a href="<c:url value='/' />admin/member/member.do?page=${pageVO.startPage-1}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
-	            	 </li>
-	            	 <!-- 위 이전게시물링크 -->
-            	 </c:if>
-            	 
-            	 <!-- jstl for문이고, 향상된 for문이아닌 고전for문으로 시작값, 종료값 var변수idx는 인덱스값이 저장되어 있습니다. -->
-            	 <c:forEach begin="${pageVO.startPage}" end="${pageVO.endPage}" var="idx">
-            	 	<li class='paginate_button page-item <c:out value="${idx==pageVO.page?'active':''}" />'>
-            	 	<a href="<c:url value='/' />admin/member/member.do?page=${idx}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="1" tabindex="0" class="page-link">${idx}</a></li>
-            	 </c:forEach>
-
-            	 <c:if test="${pageVO.next}">
-	            	 <!-- 아래 다음게시물링크 -->
-	            	 <li class="paginate_button page-item next" id="example2_next">
-	            	 <a href="<c:url value='/' />admin/member/member.do?page=${pageVO.endPage+1}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
-	            	 </li>
-            	 </c:if>
+            	 <li class="paginate_button page-item previous disabled" id="example2_previous">
+            	 <a href="#" aria-controls="example2" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+            	 </li>
+            	 <!-- 위 이전게시물링크 -->
+            	 <li class="paginate_button page-item active"><a href="#" aria-controls="example2" data-dt-idx="1" tabindex="0" class="page-link">1</a></li>
+            	 <li class="paginate_button page-item "><a href="#" aria-controls="example2" data-dt-idx="2" tabindex="0" class="page-link">2</a></li>
+            	 <li class="paginate_button page-item "><a href="#" aria-controls="example2" data-dt-idx="3" tabindex="0" class="page-link">3</a></li>
+            	 <!-- 아래 다음게시물링크 -->
+            	 <li class="paginate_button page-item next" id="example2_next">
+            	 <a href="#" aria-controls="example2" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+            	 </li>
             	 </ul>
             </div>
 	  		<!-- 페이징처리 끝 -->     
@@ -142,5 +137,6 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+  
 
-<%@ include file="../include/footer.jsp" %>  
+<%@ include file="../include/footer.jsp" %>

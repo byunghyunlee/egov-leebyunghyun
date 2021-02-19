@@ -60,15 +60,18 @@
 $(document).ready(function() {
 	//현재 선택된 URL 값을 가져오는 명령(아래)
 	var current = location.pathname;//current변수저장소에서 board, member 클릭한 내용 확인
-	var current_2 = current.split("/")[2];//split분리함수로 current에있는 문자를 분리한 배열값을 반환.
+	var current_2 = current.split("/").reverse()[1];//split분리함수로 current에있는 문자를 분리한 배열값을 반환.
+	//alert('${brdMastrVO.bbsId}'');// 디버그
 	$(".nav-treeview li a").each(function() {
-		if( $(this).attr('href').indexOf(current_2) != -1)	{
+		if( $(this).attr('href').indexOf(current_2) >= 0)	{//인덱스 0,1,2,... 이면 비교결과값이 있다는 얘기
 			//위 문제를 처리하는 대체 함수 indexOf사용
-			if(current_2 != 'board'){
+			if(current_2 != 'admin' && ($(this).attr('href').indexOf('${brdMstr.bbsId}') >= 0){
+				//$brdMstrVo.bbsId이용해서 비교추가
 				$(this).addClass("active");//선택한 메뉴의 배경색상을 흰색으로 보이게 추가하는 처리.
 			}
 		} else {
-			if(current_2 != 'board'){
+			if(current_2 != 'admin'){
+				//$bbsId이용해서 비교추가
 				$(this).removeClass("active");//선택하지 않은 메뉴의 배경색상 흰색을 제거하는 처리.
 			}
 		}
