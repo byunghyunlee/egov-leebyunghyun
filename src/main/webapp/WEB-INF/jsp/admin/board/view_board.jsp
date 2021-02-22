@@ -45,12 +45,14 @@
 				<!-- 부트스트랩 오른쪽여백주기클래스명mr-1:(margin-right: .25rem!important;) -->
                 <hr>
                 <strong><i class="fas fa-pencil-alt mr-1"></i> 작성자</strong>
-                <p class="text-muted">admin</p>
-                
+                <p class="text-muted">
+                ${result.ntcrId}
+                </p>
+                <c:if test="${not empty result.atchFileId}">
                 <hr>
                 <strong><i class="far fa-save mr-1"></i> 첨부파일</strong>
                 <p class="text-muted"><a href="#">파일다운로드</a></p>
-                
+                </c:if>
               </div>
               <!-- /.card-body -->
             </div>
