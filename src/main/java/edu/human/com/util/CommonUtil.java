@@ -16,6 +16,37 @@ public class CommonUtil {
 	@Inject
 	private MemberService memberService;
 	
+	/**
+     * XSS 방지 처리. 자바스크립트 코드를 실행하지 못하는 특수문자로 replace(교체)하는 내용
+     *접근권한 protected 현재클래스(패키지)만 이용가능 -> public
+     * @param data
+     * @return
+     */
+     public String unscript(String data) {
+        if (data == null || data.trim().equals("")) {
+            return "";
+        }
+
+        String ret = data;
+
+        ret = ret.replaceAll("<(S|s)(C|c)(R|r)(I|i)(P|p)(T|t)", "&lt;script");
+        ret = ret.replaceAll("</(S|s)(C|c)(R|r)(I|i)(P|p)(T|t)", "&lt;/script");
+
+        ret = ret.replaceAll("<(O|o)(B|b)(J|j)(E|e)(C|c)(T|t)", "&lt;object");
+        ret = ret.replaceAll("</(O|o)(B|b)(J|j)(E|e)(C|c)(T|t)", "&lt;/object");
+
+        ret = ret.replaceAll("<(A|a)(P|p)(P|p)(L|l)(E|e)(T|t)", "&lt;applet");
+        ret = ret.replaceAll("</(A|a)(P|p)(P|p)(L|l)(E|e)(T|t)", "&lt;/applet");
+
+        ret = ret.replaceAll("<(E|e)(M|m)(B|b)(E|e)(D|d)", "&lt;embed");
+        ret = ret.replaceAll("</(E|e)(M|m)(B|b)(E|e)(D|d)", "&lt;embed");
+
+        ret = ret.replaceAll("<(F|f)(O|o)(R|r)(M|m)", "&lt;form");
+        ret = ret.replaceAll("</(F|f)(O|o)(R|r)(M|m)", "&lt;form");
+
+        return ret;
+    }
+	
 	@RequestMapping(value="/idcheck.do",method=RequestMethod.GET)
 	@ResponseBody	//반환값으로 페이지를 명시하지 않고, text라고 명시
 	public String idcheck(@RequestParam("emplyr_id") String emplyr_id) throws Exception  {

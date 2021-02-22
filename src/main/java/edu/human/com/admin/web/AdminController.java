@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.human.com.member.service.EmployerInfoVO;
 import edu.human.com.member.service.MemberService;
+import edu.human.com.util.CommonUtil;
 import edu.human.com.util.PageVO;
 import egovframework.com.cmm.LoginVO;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
@@ -33,6 +34,8 @@ public class AdminController {
 	
 	@Inject
 	private MemberService memberService; 
+	@Inject
+	private CommonUtil commUtil;
 	//스프링빈(new키워드만드는 오브젝트x) 오브젝트를 사용하는 방법 @Inject, @Autowired, @Resource
 	@Autowired
 	private EgovBBSAttributeManageService bbsAttrbService;
@@ -41,7 +44,54 @@ public class AdminController {
 	@Autowired
 	private EgovBBSManageService bbsMngService;
 
-	
+	@RequestMapping("/admin/board/view_board.do")
+	public String view_board(@ModelAttribute("searchVO") BoardVO boardVO, ModelMap model) throws Exception {
+		LoginVO user = new LoginVO();
+	    if(EgovUserDetailsHelper.isAuthenticated()){
+	    	user = (LoginVO)EgovUserDetailsHelper.getAuthenticatedUser();
+		}
+
+		// 조회수 증가 여부 지정
+		boardVO.setPlusCount(true);
+
+		//---------------------------------
+		// 2009.06.29 : 2단계 기능 추가
+		//---------------------------------
+		if (!boardVO.getSubPageIndex().equals("")) {
+		    boardVO.setPlusCount(false);
+		}
+		////-------------------------------
+
+		boardVO.setLastUpdusrId(user.getUniqId());
+		BoardVO vo = bbsMngService.selectBoardArticle(boardVO);
+		//시큐어코딩 시작(게시물내용에서 자바스크립트 코드의 꺽쇠태그를 특수문자로 바꿔서 실행하지 못하는 코드로 변경)
+		//egov 저장할때, 시큐어코딩으로 저장하는 방식을 사용, 문제있음. 우리방식으로 적용
+		String subject = commUtil.unscript(vo.getNttSj());//게시물제목
+		String content = commUtil.unscript(vo.getNttCn());//게시물내용
+		vo.setNttSj(subject);
+		vo.setNttCn(content);
+		model.addAttribute("result", vo);
+		
+		model.addAttribute("sessionUniqId", user.getUniqId());
+
+		//----------------------------
+		// template 처리 (기본 BBS template 지정  포함)
+		//----------------------------
+		BoardMasterVO master = new BoardMasterVO();
+
+		master.setBbsId(boardVO.getBbsId());
+		master.setUniqId(user.getUniqId());
+
+		BoardMasterVO masterVo = bbsAttrbService.selectBBSMasterInf(master);
+
+		if (masterVo.getTmplatCours() == null || masterVo.getTmplatCours().equals("")) {
+		    masterVo.setTmplatCours("/css/egovframework/cop/bbs/egovBaseTemplate.css");
+		}
+
+		model.addAttribute("brdMstrVO", masterVo);
+
+		return "admin/board/view_board";
+	}
 	@RequestMapping("/admin/board/list_board.do")
 	public String list_board(@ModelAttribute("searchVO") BoardVO boardVO, ModelMap model) throws Exception {
 		LoginVO user = (LoginVO)EgovUserDetailsHelper.getAuthenticatedUser();
