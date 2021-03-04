@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * EmployerInfoVO클래스는 회원관리 테이블과 Get/Set하는 멤버변수를 생성한다.
  * 테이블명: (lettn)emplyinfo
- * @author 이병현
+ * @author 김일국
  *
  */
 public class EmployerInfoVO {

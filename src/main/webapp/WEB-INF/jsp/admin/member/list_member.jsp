@@ -95,7 +95,7 @@
             
             <!-- 버튼영역 시작 -->
               <div class="card-body">
-              	<a href="<c:url value='/admin/member/insert_member.do' />" class="btn btn-primary float-right">CREATE</a>
+              	<a href="<c:url value='/admin/member/insert_member.do' />" class="btn btn-primary float-right">등록</a>
               	<!-- 부트스트랩 디자인 버튼클래스를 이용해서 a태그를 버튼모양 만들기(위) -->
               	<!-- btn클래스명이 버튼모양으로 변경, btn-primary클래스명은 버튼색상을 변경하는역할 -->
               	<!-- 
@@ -108,12 +108,12 @@
               </div>
             <!-- 버튼영역 끝 -->
               
-<!-- 페이징처리 시작 -->
+            <!-- 페이징처리 시작 -->
             <div class="pagination justify-content-center">
             	<ul class="pagination">
             	 <c:if test="${pageVO.prev}">
 	            	 <li class="paginate_button page-item previous" id="example2_previous">
-	            	 <a href="<c:url value='/' />admin/member/member.do?page=${pageVO.startPage-1}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+	            	 <a href="<c:url value='/' />admin/member/list_member.do?page=${pageVO.startPage-1}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
 	            	 </li>
 	            	 <!-- 위 이전게시물링크 -->
             	 </c:if>
@@ -121,18 +121,18 @@
             	 <!-- jstl for문이고, 향상된 for문이아닌 고전for문으로 시작값, 종료값 var변수idx는 인덱스값이 저장되어 있습니다. -->
             	 <c:forEach begin="${pageVO.startPage}" end="${pageVO.endPage}" var="idx">
             	 	<li class='paginate_button page-item <c:out value="${idx==pageVO.page?'active':''}" />'>
-            	 	<a href="<c:url value='/' />admin/member/member.do?page=${idx}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="1" tabindex="0" class="page-link">${idx}</a></li>
+            	 	<a href="<c:url value='/' />admin/member/list_member.do?page=${idx}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="1" tabindex="0" class="page-link">${idx}</a></li>
             	 </c:forEach>
 
             	 <c:if test="${pageVO.next}">
 	            	 <!-- 아래 다음게시물링크 -->
 	            	 <li class="paginate_button page-item next" id="example2_next">
-	            	 <a href="<c:url value='/' />admin/member/member.do?page=${pageVO.endPage+1}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+	            	 <a href="<c:url value='/' />admin/member/list_member.do?page=${pageVO.endPage+1}&search_type=${pageVO.search_type}&search_keyword=${pageVO.search_keyword}" aria-controls="example2" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
 	            	 </li>
             	 </c:if>
             	 </ul>
             </div>
-	  		<!-- 페이징처리 끝 -->     
+	  		<!-- 페이징처리 끝 -->       
             
           </div>
         </div>

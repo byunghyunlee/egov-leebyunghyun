@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!-- 관리자단 헤더 시작 header.jsp -->
 <!DOCTYPE html>
 <html lang="ko">
@@ -31,7 +32,7 @@
   <!-- summernote -->
   <link rel="stylesheet" href="<c:url value='/' />resources/plugins/summernote/summernote-bs4.min.css">
 <script>
-if("${msg}"!="") {//RedirectAttributes로 컨트롤러에서 보내온 값을 출력
+if("${msg}"!="") { //RedirectAttributes 로 컨트롤러에서 보내온 값을 출력
 	alert("${msg}가(이) 성공하였습니다.");
 }
 </script>
@@ -124,13 +125,13 @@ if("${msg}"!="") {//RedirectAttributes로 컨트롤러에서 보내온 값을 �
               <li class="nav-item">
                 <a href="<c:url value='/' />admin/board/list_board.do?bbsId=BBSMSTR_AAAAAAAAAAAA" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>공지사항관리</p>
+                  <p>공지사항 관리</p>
                 </a>
               </li>
-               <li class="nav-item">
+              <li class="nav-item">
                 <a href="<c:url value='/' />admin/board/list_board.do?bbsId=BBSMSTR_BBBBBBBBBBBB" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>겔러리관리</p>
+                  <p>겔러리 관리</p>
                 </a>
               </li>
             </ul>

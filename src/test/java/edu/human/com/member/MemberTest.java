@@ -67,8 +67,11 @@ public class MemberTest {
 		//memberVO에 set으로 값을 입력한 이후 DB에 인서트함.
 		//emplyr_id는 기본키이기 때문에 중복허용하지 않게 처리(아래)
 		PageVO pageVO = new PageVO();
+		pageVO.setPage(1);
+		pageVO.setPerPageNum(10);
+		pageVO.setQueryPerPageNum(10000);//JUnit테스트 전용으로 쿼리리 Limit 두번째 인자값을 10000정도로 해서 에러 않나게 처리
 		List<EmployerInfoVO> memberList = memberService.selectMember(pageVO);
-		memberVO.setEMPLYR_ID("user_" + (memberList.size() + 1));
+		memberVO.setEMPLYR_ID("user_" + (memberList.size()+1));
 		memberVO.setORGNZT_ID("ORGNZT_0000000000000");//외래키이기때문에
 		memberVO.setUSER_NM("사용자_" + memberList.size());
 		//암호화 작업(아래) 스프링시큐리티X, egov전용 시큐리티암호화("입력한문자","입력한ID")
@@ -93,6 +96,12 @@ public class MemberTest {
 	@Test
 	public void selectMember() throws Exception {
 		PageVO pageVO = new PageVO();
+		pageVO.setPage(1);
+		pageVO.setPerPageNum(5);//하단의 페이징보여줄 개수
+		pageVO.setQueryPerPageNum(10);//쿼리에서 1페이당 보여줄 개수=화면에서 1페이당 보여줌
+		List<EmployerInfoVO> listMember = memberService.selectMember(pageVO);
+		//전체페이지 개수는 자동계산=total카운트를 계산순간(아래)
+		pageVO.setTotalCount(listMember.size());
 		List<EmployerInfoVO> memberList = memberService.selectMember(pageVO);
 		for(EmployerInfoVO member:memberList) {
 			System.out.println("현재 등록되 회원은 " + member.toString());

@@ -85,7 +85,7 @@
                   	<label for="EMPLYR_STTUS_CODE">EMPLYR_STTUS_CODE</label>
                   	<select class="form-control" name="EMPLYR_STTUS_CODE" id="EMPLYR_STTUS_CODE">
 	                  	<c:forEach items="${codeMap}" var="sub">
-	                  		<option value="${sub.value.CODE}" >${sub.value.CODE_NM}</option>
+	                  		<option value="${sub.value.CODE}">${sub.value.CODE_NM}</option>
 	                  	</c:forEach>
                   	</select>
                   	<!-- 위 코드 설명: 맵자료형을 jstl에서 출력하기 (아래) -->
@@ -115,7 +115,7 @@
           <!-- 버튼영역 시작 -->
             <div class="card-body">
             	<a href="<c:url value='/admin/member/list_member.do' />" class="btn btn-primary float-right mr-1">목록</a>
-              	<button id="btn_insert" type="submit" class="btn btn-info float-right mr-1" disabled>등록</button>              	            
+              	<button id="btn_insert" type="submit" class="btn btn-info float-right mr-1" disabled>등록</button>
               	<!-- a태그는 링크이동은 되지만, post값을 전송하지는 못합니다. 그래서, button태그를 사용. -->
             </div>
           <!-- 버튼영역 끝 -->
@@ -140,23 +140,23 @@ $(document).ready(function(){
 	$("#EMPLYR_ID").bind("blur", function(){
 		var emplyr_id = $(this).val();
 		$.ajax({
-			url:"<c:url value='/' />idcheck.do?emplyr_id="+emplyr_id,//@Response사용하는 클래스의 메서드 매핑URL값
-			type:"get",//jsp에서 컨트롤러 보내는 방식
-			dataType:"text",//ajax결과를 컨트롤러에서 받는 방식			 
+			url:"<c:url value='/' />idcheck.do?emplyr_id="+emplyr_id,//@ResponseBody사용하는 클래스의 메서드 매핑URL값 반환값이 페이지X,text입니다.
+			type:"get",//jsp에서 컨트롤러로 보내는하는 방식
+			dataType:"text",//ajax결과를 컨트롤러에서 받는 방식
 			success:function(result){
-				if(result=="0"){//중복 id가 없으면
-					alert("사용가능한 ID입니다.")
-					$("#btn_insert").attr("disabled", false);//서밋버튼 활성화
-				}else {//중복id가 있으면
-					alert("중복ID가 존재합니다..");
-					$("#btn_insert").attr("disabled", true);//서밋버튼 비활성화					
+				if(result=="0"){//중복id가 없으면
+					alert("사용가능한 ID입니다.");
+					$("#btn_insert").attr("disabled", false);//서브밋 버튼 활성화
+				}else{//중복id가 있으면
+					alert("중복ID가 존재합니다.");
+					$("#btn_insert").attr("disabled", true);//서브밋 버튼 비활성화
 				}
 			},
 			error:function(){
-				alert("RestAPI서버에 문제가 있습니다.")
+				alert("RestAPI서버에 문제가 있습니다.");
 			}
 		});
 		
-	})
+	});
 });
 </script>

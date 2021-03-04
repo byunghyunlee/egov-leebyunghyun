@@ -7,32 +7,32 @@ select GROUP_ID, GROUP_NM from lettnauthorgroupinfo
 order by group_dc asc
 </select>
 
-<select id="selectCodeMap" resultType="java.util.HashMap">	
-select CODE, CODE_NM
-from lettccmmndetailcode
+<select id="selectCodeMap" resultType="java.util.HashMap">
+select CODE, CODE_NM 
+from lettccmmndetailcode 
 where code_id = #{code_id}
 </select>
+
 <select id="selectMember" resultType="edu.human.com.member.service.EmployerInfoVO">
 select EMPLYR_ID,USER_NM,EMAIL_ADRES
 ,FN_CODE_NM('COM999',EMPLYR_STTUS_CODE) AS EMPLYR_STTUS_CODE
 ,SBSCRB_DE
 ,FN_GROUP_NM(GROUP_ID) AS GROUP_ID
 from lettnemplyrinfo
-
-<if test="search_type !=null  and search_type !='' ">
-where	
+<if test="search_type !=null and search_type !='' ">
+where
 	<if test="search_type == 'all'.toString() ">
-		EMPLYR_ID LIKE concat('%',#{search_keyword},'%')
+		EMPLYR_ID LIKE CONCAT('%',#{search_keyword},'%')
 		or
-		USER_NM LIKE concat('%',#{search_keyword},'%')
+		USER_NM LIKE CONCAT('%',#{search_keyword},'%')
 	</if>
-	<if test="search_type =='user_id'.toString() ">
-		EMPLYR_ID LIKE concat('%',#{search_keyword},'%')
+	<if test="search_type == 'user_id'.toString() ">
+		EMPLYR_ID LIKE CONCAT('%',#{search_keyword},'%')
 	</if>
-	<if test="search_type == 'user_name'.toString() ">
-		USER_NM LIKE concat('%',#{search_keyword},'%')
-	</if> 
-</if>
+	<if test="search_type == 'user_name'.toString()">
+		USER_NM LIKE CONCAT('%',#{search_keyword},'%')
+	</if>
+</if> 
 order by sbscrb_de desc
 LIMIT #{queryStartNo},#{queryPerPageNum}
 </select>
