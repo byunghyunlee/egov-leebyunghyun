@@ -61,6 +61,122 @@ public class HomeController {
 	@Inject
 	private BoardService boardService;
 	
+	@RequestMapping("/tiles/board/update_board.do")
+	public String update_board(RedirectAttributes rdat, final MultipartHttpServletRequest multiRequest, @ModelAttribute("searchVO") BoardVO boardVO,
+		    @ModelAttribute("bdMstr") BoardMaster bdMstr, @ModelAttribute("board") Board board, BindingResult bindingResult, ModelMap model,
+		    SessionStatus status) throws Exception {
+
+	    	// 사용자권한 처리
+	    	if(!EgovUserDetailsHelper.isAuthenticated()) {
+	    		model.addAttribute("message", egovMessageSource.getMessage("fail.common.login"));
+	        	return "login.tiles";
+	    	}
+
+		LoginVO user = (LoginVO)EgovUserDetailsHelper.getAuthenticatedUser();
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+
+		String atchFileId = boardVO.getAtchFileId();
+
+		beanValidator.validate(board, bindingResult);
+		if (bindingResult.hasErrors()) {
+
+		    boardVO.setFrstRegisterId(user.getUniqId());
+
+		    BoardMaster master = new BoardMaster();
+		    BoardMasterVO bmvo = new BoardMasterVO();
+		    BoardVO bdvo = new BoardVO();
+
+		    master.setBbsId(boardVO.getBbsId());
+		    master.setUniqId(user.getUniqId());
+
+		    bmvo = bbsAttrbService.selectBBSMasterInf(master);
+		    bdvo = bbsMngService.selectBoardArticle(boardVO);
+
+		    model.addAttribute("result", bdvo);
+		    model.addAttribute("bdMstr", bmvo);
+
+		    return "board/update_board.tiles";
+		}
+
+		if (isAuthenticated) {
+		    final Map<String, MultipartFile> files = multiRequest.getFileMap();
+		    if (!files.isEmpty()) {//첨부파일이 있을때 작동
+		    	//기존 첨부파일이 존재하지 않으면 신규등록
+				if ("".equals(atchFileId)) {
+					System.out.println("디버그1:-기존첨부파일이 없을경우 신규등록시 사용"+atchFileId);
+				    List<FileVO> result = fileUtil.parseFileInf(files, "BBS_", 0, atchFileId, "");
+				    atchFileId = fileMngService.insertFileInfs(result);
+				    board.setAtchFileId(atchFileId);
+				} else {//기본첨부파일이 존재하면 기존것 보존하고, 다시 신규등록
+					System.out.println("디버그2:"+atchFileId);
+				    FileVO fvo = new FileVO();
+				    fvo.setAtchFileId(atchFileId);
+				    int cnt = fileMngService.getMaxFileSN(fvo);
+				    List<FileVO> _result = fileUtil.parseFileInf(files, "BBS_", cnt, atchFileId, "");
+				    fileMngService.updateFileInfs(_result);
+				}
+		    }
+
+		    board.setLastUpdusrId(user.getUniqId());
+
+		    board.setNtcrNm("");	// dummy 오류 수정 (익명이 아닌 경우 validator 처리를 위해 dummy로 지정됨)
+		    board.setPassword("");	// dummy 오류 수정 (익명이 아닌 경우 validator 처리를 위해 dummy로 지정됨)
+		    //게시물 업데이트 레코드 처리(아래)
+		    bbsMngService.updateBoardArticle(board);
+		}
+		
+	    BoardVO bdvo = new BoardVO();
+	    bdvo = bbsMngService.selectBoardArticle(boardVO);
+	    rdat .addFlashAttribute("msg", "수정");
+	    return "redirect:/tiles/board/view_board.do?bbsId="+bdvo.getBbsId()
+		+"&nttId="+bdvo.getNttId()+"&bbsTyCode="+bdvo.getBbsTyCode()
+		+"&bbsAttrbCode="+bdvo.getBbsAttrbCode()+"&authFlag=Y"
+		+"&pageIndex="+bdvo.getPageIndex();			
+	}
+	
+	@RequestMapping("tiles/board/update_board_form.do")
+	public String update_board(@ModelAttribute("searchVO") BoardVO boardVO, @ModelAttribute("board") BoardVO vo, ModelMap model)
+		    throws Exception {
+
+		// 로그인체크(로그인 되지 않았으면 로그인페이지로 이동처리)
+		if(!EgovUserDetailsHelper.isAuthenticated()) {
+			model.addAttribute("message", egovMessageSource.getMessage("fail.common.login"));
+	    	return "login.tiles";
+		}
+
+		LoginVO user = (LoginVO)EgovUserDetailsHelper.getAuthenticatedUser();
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+
+		boardVO.setFrstRegisterId(user.getUniqId());
+
+		BoardMaster master = new BoardMaster();
+		BoardMasterVO bmvo = new BoardMasterVO();
+		BoardVO bdvo = new BoardVO();
+
+		vo.setBbsId(boardVO.getBbsId());
+
+		master.setBbsId(boardVO.getBbsId());
+		master.setUniqId(user.getUniqId());
+
+		if (isAuthenticated) {
+		    bmvo = bbsAttrbService.selectBBSMasterInf(master);
+		    bdvo = bbsMngService.selectBoardArticle(boardVO);
+		}
+
+		model.addAttribute("result", bdvo);//게시물 정보 오브젝트(게시물제목,내용,첨부파일id...)
+		model.addAttribute("bdMstr", bmvo);//게시판 정보 오브젝트(게시판명,게시판id...)
+
+		//----------------------------
+		// 기본 BBS template 지정 게시판ID별로 필요한 디자인css파일을 변경 시켜줍니다.
+		//----------------------------
+		if (bmvo.getTmplatCours() == null || bmvo.getTmplatCours().equals("")) {
+		    bmvo.setTmplatCours("/css/egovframework/cop/bbs/egovBaseTemplate.css");
+		}
+		model.addAttribute("brdMstrVO", bmvo);//위에서 정의한 bdMstr 모델과 같음.2사람이상이 만들어서 나오는현상
+		////-----------------------------
+		return "board/update_board.tiles";
+	}
+	
 	@RequestMapping("/tiles/board/delete_board.do")
 	public String delete_board(FileVO fileVO, BoardVO boardVO, RedirectAttributes rdat) throws Exception {
 		if(boardVO.getAtchFileId()!=null && !"".equals(boardVO.getAtchFileId()) ) {
