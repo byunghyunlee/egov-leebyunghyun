@@ -104,7 +104,7 @@
 	  		<!-- 페이징처리 끝 --> 
 	  		
 			<p class="btn_line">
-				<a href="<c:url value='/tiles/board/insert_board.do?bbsId=${boardVO.bbsId}' />" class="btn_baseColor">등록</a>
+				<a href="<c:url value='/tiles/board/insert_board_form.do?bbsId=${boardVO.bbsId}' />" class="btn_baseColor">등록</a>
 			</p>
 		</div>
 		<!-- //메인본문영역 -->

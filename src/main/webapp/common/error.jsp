@@ -21,6 +21,8 @@
 			<br>message : ${requestScope['javax.servlet.error.message']}
 			<br>exception : ${requestScope['javax.servlet.error.exception']}
 			<br>request uri : <a href="${requestScope['javax.servlet.error.request_uri']}">${requestScope['javax.servlet.error.request_uri']}</a>
+			<c:set var="url" value="${header.referer}" />
+			<br> 이전페이지로 이동: <a href="${url}">${url}</a>
 			<br>servlet name : ${requestScope['javax.servlet.error.servlet_name']}
 			<c:set var="exception" value="${requestScope['javax.servlet.error.exception']}"/>
 			<br>에러추적trace : 
