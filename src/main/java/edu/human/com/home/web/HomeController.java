@@ -1,10 +1,16 @@
 package edu.human.com.home.web;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,13 +18,13 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springmodules.validation.bean.BeanValidator;
 import org.springmodules.validation.commons.DefaultBeanValidator;
 
 import edu.human.com.board.service.BoardService;
@@ -55,14 +61,65 @@ public class HomeController {
 	private EgovFileMngUtil fileUtil;
 	@Autowired
 	private EgovFileMngService fileMngService;
-	
+		
 	@Inject
 	private CommonUtil commUtil;
 	@Inject
 	private BoardService boardService;
 	
+	@RequestMapping("/tiles/board/previewImage.do")
+	public void previewImage(HttpServletRequest request, HttpServletResponse response, @RequestParam("atchFileId") String atchFileId) throws Exception {
+		FileVO fileVO = new FileVO();
+		fileVO.setAtchFileId(atchFileId);
+		for(int cnt=0;cnt<3;cnt++) {
+			fileVO.setFileSn(Integer.toString(cnt));
+			fileVO = fileMngService.selectFileInf(fileVO);
+			if(fileVO != null) {
+				break;
+			}
+		}
+		File file = null;
+		//첨부파일 확장자가 이미지가 아닐때, 엑박이미지 대신 대체 이미지 지정
+		String[] imgCheck = {"jpg","jpeg","gif","png"};
+		boolean boolCheck = Arrays.asList(imgCheck).contains(fileVO.getFileExtsn().toLowerCase());
+		if(boolCheck == false) { //첨부파일이 이미지 가 아니라면.
+			//위에서 구한 첨부파일 저장위치, 저장파일명을 가지고, 화면에 뿌려짐-스트리밍(아래)
+			String path = request.getServletContext().getRealPath("/resources/home/img");
+			System.out.println("디버그_경로2" + path);
+			file = new File(path + "/no_image.png");
+		} else {
+			//위에서 구한 첨부파일 저장위치, 저장파일명을 가지고, 화면에 뿌려짐-스트리밍(아래) 
+			file = new File(fileVO.getFileStreCours(),fileVO.getStreFileNm());
+		}
+		//스트리밍에 필요한 클래스 변수(오브젝트객체) 생성(아래 3가지)
+		FileInputStream fis = new FileInputStream(file);//저장된파일을 스트림클래스를 이용해서 읽어들임
+		BufferedInputStream bis = new BufferedInputStream(fis);//fis인풋스트림을 받아서 버퍼에 저장
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int imgByte;//while반복문의 반복조건에 사용될 변수
+		while( (imgByte=bis.read()) != -1 ) {
+			baos.write(imgByte);
+		}
+		//여기까지가 출력버퍼 baos객체에 이미지내용을 임시저장한 상태
+		
+		String type = "";//type변수 초기화
+		if(fileVO.getFileExtsn() !=null && !"".equals(fileVO.getFileExtsn()) ) {
+			//첨부파일 확장이름 존재하면, 이미지파일을 체크함(아래)
+			if("jpg".equals(fileVO.getFileExtsn().toLowerCase())) {
+				type = "image/jpeg";//jpg != jpeg 이름이 틀려서
+			} else {
+				type = "imge/" + fileVO.getFileExtsn().toLowerCase();
+			}
+		}
+		//브라우저에서 출력하는 response응답코드(아래)
+		response.setHeader("Content-Type", type);
+		response.setContentLength(baos.size());
+		baos.writeTo(response.getOutputStream());//실제출력전송
+		response.getOutputStream().flush();//실제화면출력됨
+		response.getOutputStream().close();//응답객체종료하기
+	}
+	
 	@RequestMapping("/tiles/board/update_board.do")
-	public String update_board(RedirectAttributes rdat, final MultipartHttpServletRequest multiRequest, @ModelAttribute("searchVO") BoardVO boardVO,
+	public String update_board(RedirectAttributes rdat,final MultipartHttpServletRequest multiRequest, @ModelAttribute("searchVO") BoardVO boardVO,
 		    @ModelAttribute("bdMstr") BoardMaster bdMstr, @ModelAttribute("board") Board board, BindingResult bindingResult, ModelMap model,
 		    SessionStatus status) throws Exception {
 
@@ -127,14 +184,14 @@ public class HomeController {
 		
 	    BoardVO bdvo = new BoardVO();
 	    bdvo = bbsMngService.selectBoardArticle(boardVO);
-	    rdat .addFlashAttribute("msg", "수정");
+	    rdat.addFlashAttribute("msg", "수정");
 	    return "redirect:/tiles/board/view_board.do?bbsId="+bdvo.getBbsId()
 		+"&nttId="+bdvo.getNttId()+"&bbsTyCode="+bdvo.getBbsTyCode()
 		+"&bbsAttrbCode="+bdvo.getBbsAttrbCode()+"&authFlag=Y"
-		+"&pageIndex="+bdvo.getPageIndex();			
+		+"&pageIndex="+bdvo.getPageIndex();	
 	}
 	
-	@RequestMapping("tiles/board/update_board_form.do")
+	@RequestMapping("/tiles/board/update_board_form.do")
 	public String update_board(@ModelAttribute("searchVO") BoardVO boardVO, @ModelAttribute("board") BoardVO vo, ModelMap model)
 		    throws Exception {
 
@@ -219,7 +276,7 @@ public class HomeController {
 		beanValidator.validate(board, bindingResult);
 		if (bindingResult.hasErrors()) {
 			//전송값이 문자인데 필드값은 날짜일때 바인딩 에러가 발생때 if문실행 Get/Set 에러
-			//전송키가 VO의 멤버변수와 같지 않아서, 전송폼 nttCn 인데, VO의 멤버변수 nttCn 일때 바인딩 에러 
+			//전송키가 VO의 멤버변수와 같지 않아서, 전송폼 nttcn 인데 , VO의 멤버변수 nttCn 일때 바인딩 에러 
 			System.out.println("디버그" + board.toString());
 		    BoardMasterVO master = new BoardMasterVO();
 		    BoardMasterVO vo = new BoardMasterVO();
@@ -268,7 +325,7 @@ public class HomeController {
 	
 	@RequestMapping("/tiles/board/insert_board_form.do")
 	public String insert_board_form(@ModelAttribute("searchVO") BoardVO boardVO, ModelMap model) throws Exception {
-		// 사용자권한 처리:로그인상태가 아니면 if문 안쪽실행
+		// 사용자권한 처리: 로그인상태가 아니면 if문안쪽실행
 		if(!EgovUserDetailsHelper.isAuthenticated()) {
 			model.addAttribute("message", egovMessageSource.getMessage("fail.common.login"));
 	    	return "login.tiles";
@@ -419,8 +476,30 @@ public class HomeController {
 	}
 	//method.RequestMethod=GET[POST] 없이사용하면, 둘다 허용되는 매핑이됨
 	@RequestMapping("/tiles/home.do")
-	public String home() throws Exception {
+	public String home(ModelMap model) throws Exception {
+		//메인 페이지에 최근 게시물 출력하는 서비스 호출전 Get/Set
+		BoardVO boardVO = new BoardVO();
+		Map<String,Object> boardMap = null;
+		boardVO.setPageUnit(3);//1페이당 출력할 개수
+		boardVO.setPageSize(10);//리스트하단 표시할 페이징 개수
+		boardVO.setBbsId("BBSMSTR_BBBBBBBBBBBB");//겔러리3개
+
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(boardVO.getPageIndex());
+		paginationInfo.setRecordCountPerPage(boardVO.getPageUnit());
+		paginationInfo.setPageSize(boardVO.getPageSize());
+		boardVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		boardVO.setLastIndex(paginationInfo.getLastRecordIndex());
+		boardVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+
+		boardMap = bbsMngService.selectBoardArticles(boardVO, "BBSA02");
+		System.out.println("디버그:"+boardMap.get("resultList"));
+		model.addAttribute("galleryList", boardMap.get("resultList"));
 		
+		boardVO.setPageUnit(5);
+		boardVO.setBbsId("BBSMSTR_AAAAAAAAAAAA");
+		boardMap = bbsMngService.selectBoardArticles(boardVO, "BBSA02");
+		model.addAttribute("noticeList", boardMap.get("resultList"));
 		return "home.tiles";
 	}
 }

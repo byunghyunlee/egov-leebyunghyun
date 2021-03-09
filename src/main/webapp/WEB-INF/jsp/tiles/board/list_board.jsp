@@ -2,6 +2,12 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://egovframework.gov/ctl/ui" prefix="ui" %>
+<script>
+function fn_egov_select_noticeList(pageNo) {
+    document.search_form.pageIndex.value = pageNo;
+    document.search_form.submit();  
+}
+</script>
 <style>
 .select {
 	padding: 5px;
