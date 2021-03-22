@@ -52,7 +52,7 @@ public class EgovUserDetailsHelper {
 			if (EgovObjectUtil.isNull((LoginVO) RequestContextHolder.getRequestAttributes().getAttribute("LoginVO", RequestAttributes.SCOPE_SESSION))) {
 				// log.debug("## authentication object is null!!");
 				return null;
-			}
+			}			
 			
 			return listAuth;
 		}
