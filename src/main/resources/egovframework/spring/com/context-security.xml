@@ -53,7 +53,7 @@
        		FROM AUTHORROLE 
        		WHERE USE_AT='Y' ORDER BY SORT_ORDR DESC"
 	/>
-
+	
 	<egov-security:initializer id="initializer" supportPointcut="false" supportMethod="false" />
 
     <!-- URL에 세미콜론(semicolon)허용 여부(기본값/false) -->
