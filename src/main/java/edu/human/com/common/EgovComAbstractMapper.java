@@ -22,7 +22,7 @@ import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
  * 오버라이드해서 전자정부에서 제공한 EgovAbastacMapper 추상클래스에서 정의된 명세를 
  * 아래 클래스 재정의(오버라이딩)해서 메서드를 구현하게 됩니다. 
  * 추상클래스를 만드는 목적: 멤버변수또는 멤버메서드를 규격화 합니다.(전자정부표준을 준수하였는지 인증받기 위해서)
- * @author 김일국
+ * @author 이병현
  *
  */
 public abstract class EgovComAbstractMapper extends EgovAbstractMapper {

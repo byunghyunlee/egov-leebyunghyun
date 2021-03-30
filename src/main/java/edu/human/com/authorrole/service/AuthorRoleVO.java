@@ -1,7 +1,7 @@
 package edu.human.com.authorrole.service;
 /**
- * AuthorRoleVO 클래스는 jsp,DAO에서 사용하는 임시저장 Get/Set역할
- * @author 이병현
+ * AuthorRoleVO 클래스는 jsp,DAO에서사용하는 임시저장 Get/Set역할
+ * @author User
  *
  */
 public class AuthorRoleVO {

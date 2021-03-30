@@ -41,12 +41,12 @@ public class MemberDAO extends EgovComAbstractMapper {
 	}
 	
 	public Map<Object, Object> selectCodeMap(String code_id) throws Exception {
-		System.out.println("디버그2 : " + code_id);
-		return selectMap("memberMapper.selectCodeMap", code_id, "CODE");
+		System.out.println("디버그2 : " + code_id);//아래-postgres에서 대문자일때 않되어서 소문자로 code변경
+		return selectMap("memberMapper.selectCodeMap", code_id, "code");
 	}
 	
 	public Map<Object,Object> selectGroupMap() throws Exception {
-		//memberMapper 쿼리 호출(아래)
-		return selectMap("memberMapper.selectGroupMap", "GROUP_ID");
+		//memberMapper 쿼리 호출(아래-postgres에서 대문자일때 않되어서 소문자로 group_id 변경)
+		return selectMap("memberMapper.selectGroupMap", "group_id");
 	}
 }
