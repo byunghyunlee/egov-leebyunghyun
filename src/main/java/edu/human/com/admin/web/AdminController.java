@@ -78,6 +78,26 @@ public class AdminController {
 	@Autowired
 	private EgovFileMngUtil fileUtil;
 	
+	//권한 관리 삭제하기 호출 POST
+	@RequestMapping(value="/admin/authorrole/delete_author.do",method=RequestMethod.POST)
+	public String delete_author(AuthorRoleVO authorRoleVO, RedirectAttributes rdat) throws Exception {
+		authorRoleService.deleteAuthorRole(authorRoleVO.getAUTHORROLE_ID());
+		rdat.addFlashAttribute("msg", "삭제");
+		return "redirect:/admin/authorrole/list_author.do";
+	}
+	//권한 관리 등록하기 호출POST
+	@RequestMapping(value="/admin/authorrole/insert_author.do",method=RequestMethod.POST)
+	public String insert_author(AuthorRoleVO authorRoleVO, RedirectAttributes rdat) throws Exception {
+		authorRoleService.insertAuthorRole(authorRoleVO);
+		rdat.addFlashAttribute("msg", "등록");
+		return "redirect:/admin/authorrole/list_author.do";
+	}
+	//권한 관리 등록하기 호출 GET
+	@RequestMapping(value="/admin/authorrole/insert_author_form.do",method=RequestMethod.GET)
+	public String insert_author(Model model) throws Exception {		
+		model.addAttribute("codeGroup", memberService.selectGroupMap());
+		return "admin/authorrole/insert_author";
+	}
 	//권한 관리 수정하기 호출POST
 	@RequestMapping(value="/admin/authorrole/update_author.do",method=RequestMethod.POST)
 	public String update_author(RedirectAttributes rdat,AuthorRoleVO authorRoleVO,PageVO pageVO) throws Exception {
